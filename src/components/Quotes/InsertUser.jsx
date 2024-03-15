@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../firebase/api";
 import { useTasks } from "utils/ProviderContext";
 
-
+const currentDate = new Date();
 
 const initialState = {
   order: 0,
@@ -15,6 +15,7 @@ const initialState = {
   telefono: "",
   type: "unregistered",
   firma: "",
+  date: currentDate 
 };
 
   export function InsertUser() {

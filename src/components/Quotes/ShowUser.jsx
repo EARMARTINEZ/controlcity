@@ -9,6 +9,7 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
     const { TextArea } = Input;
 
     const {nombre, cedula, telefonocelular}=DataUser
+    const currentDate = new Date();
 
     const initialState = {
       order: "",
@@ -17,6 +18,7 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
       telefono: telefonocelular,
       type: "registered",
       firma: "",
+      date: currentDate 
     };
 
     const [customerAttention, setCustomerAttention] = useState(initialState);   
