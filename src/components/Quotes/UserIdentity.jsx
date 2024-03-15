@@ -9,17 +9,31 @@ const UserIdentity = () => {
   const [User, setUser] = useState([]);
   
   
+
+  
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const cedula = queryParams.get('cedula');
-    
+    const TIMEOUT = 10000; // 10 segundos
+
+
+    const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.log('La solicitud ha excedido el tiempo máximo de espera.');
+    }, TIMEOUT);
+        
     if (cedula) {
       getUserInf(cedula)
-        .then(MapData => {
+        .then(MapData => {          
           setUser(...MapData);
+          clearTimeout(timeoutId);
+        }) 
+        .then(data => {
+              console.log('Datos de la respuesta:', data);
         })
         .catch(error => {
-          setUser(null);
+          setUser(null);  
+          clearTimeout(timeoutId);        
           console.error('Error fetching user information:', error);
         });
     }

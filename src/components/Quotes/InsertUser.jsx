@@ -2,43 +2,95 @@ import React from 'react';
 import { useEffect, useState } from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd';
+import { toast } from "react-toastify";
+import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../firebase/api";
 import { useTasks } from "utils/ProviderContext";
 
+
+
 const initialState = {
+  order: 0,
   cedula: "",
   nombre: "",
   telefono: "",
+  type: "unregistered",
+  firma: "",
 };
 
   export function InsertUser() {
 
     const { validateCedula } = useTasks();
-    const { TextArea } = Input;
-
-    const [website, setWebsite] = useState(initialState);
-    const [cedula, setCedula] = useState('');
-    const [InsertUser, setInsertUser] = useState({});
+    
+    const [customerAttention, setCustomerAttention] = useState(initialState);   
+    const [clientes, setClientes] = useState([]);
+    let RegistroId;
   
-    const onFinish = (values) => {
-      // console.log('Received values of form:', values);
+    const onFinish = async (values) => {
+      try {
+              getClientes();
 
-      setInsertUser(values);
+              const orders = clientes.map(objeto => objeto.order);
+              const maximo = orders.reduce((max, order) => Math.max(max, order), orders[0]);
+              
+              const UpdatedObject = {
+                ...customerAttention, 
+                order: maximo ? maximo + 1 : 1
+              };  
+              
+              const Buscar = clientes.find(type => type.cedula == UpdatedObject.cedula )            
 
-      console.log('Received values of form:', website);
+              if (!Buscar) {
+                await saveWebsite(UpdatedObject)
+                .then((docId) => {
+                  RegistroId = docId._key.path.segments[1];
+                  console.log('ID del documento guardado:', RegistroId);               
+                })
+                window.location.href = `/docs/pdf-viewer-with-signature?RegistroId=${encodeURIComponent(RegistroId)}`;
+
+              } else {
+                await saveWebsite(UpdatedObject)
+                .then((docId) => {
+                  RegistroId = docId._key.path.segments[1];
+                  console.log('ID del documento guardado:', RegistroId);               
+                })
+                window.location.href = `/docs/pdf-viewer-with-signature?RegistroId=${encodeURIComponent(RegistroId)}`;
+                // await updateWebsite(Buscar.id, UpdatedObject);
+                // toast("Updated", {
+                //   type: "success",
+                // });
+               
+              }
      
-      // window.location.href = `/docs/pdf-viewer-with-signature?cedula=${encodeURIComponent(values.cedula)}`;
+       
+
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     const handleInputChange = ({ target: { name, value } }) =>{
-      setWebsite({ ...website, [name]: value });
-      console.log(website);
-
-
-
+      setCustomerAttention({ ...customerAttention, [name]: value });
+      
     }
-    
 
-     
+   
+    
+    const getClientes = async () => {
+      const querySnapshot = await getWebsites();   
+      const docs = [];
+      querySnapshot.forEach((doc) => {
+        docs.push({ ...doc.data(), id: doc.id });
+      });
+      // console.log(docs)
+      setClientes(docs) 
+    };
+  
+    useEffect(() => {   
+      getClientes();
+    
+    }, []);
+
+  
     const onFinishFailed = (errorInfo) => {
       console.log('Failed:', errorInfo);
     };
@@ -65,7 +117,7 @@ const initialState = {
     </header> 
           <Form.Item
               label="Cedula"  
-              name="forcedula"                    
+              name="cedula"                    
               rules={[
                 {
                   required: true,
@@ -90,7 +142,7 @@ const initialState = {
               name="cedula"
               onChange={handleInputChange}    
               placeholder=""
-              value={website.cedula}
+              value={customerAttention.cedula}
                                                
               className="w-full"
             />
@@ -98,7 +150,7 @@ const initialState = {
 
             <Form.Item
                 label="Nombre" 
-                name="forNombre"                
+                name="nombre"                
                 rules={[
                     {
                     required: true,
@@ -109,14 +161,14 @@ const initialState = {
                 
                   <Input 
                     name="nombre"  
-                    value={website.nombre}
+                    value={customerAttention.nombre}
                     onChange={handleInputChange}
                   />
               </Form.Item> 
 
               <Form.Item
               label="Telefono" 
-              name="forTelefono"              
+              name="telefono"              
               rules={[
                   {
                   required: true,
@@ -126,7 +178,7 @@ const initialState = {
               >
               <Input 
               name="telefono"  
-              value={website.telefono}
+              value={customerAttention.telefono}
               onChange={handleInputChange}
               />
             </Form.Item>

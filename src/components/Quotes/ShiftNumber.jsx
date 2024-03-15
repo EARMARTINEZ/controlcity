@@ -9,12 +9,15 @@ import { Button, Checkbox, Form, Input, Result } from 'antd';
     const { TextArea } = Input;
 
     const [nTruno, setnTruno] = useState();
+    const [nNombre, setnNombre] = useState();
 
     useEffect(() => {
      
       const queryParams = new URLSearchParams(window.location.search);
-      const truno = queryParams.get('turno');      
+      const truno = queryParams.get('turno');  
+      const nombre = queryParams.get('nombre');      
       setnTruno(truno)
+      setnNombre(nombre)
 
       console.log('truno:', truno);  
      
@@ -44,7 +47,7 @@ import { Button, Checkbox, Form, Input, Result } from 'antd';
             <Form.Item >  
                 <Result
                 status="success"
-                title="CARDIA SCHWARZ"
+                title={nNombre}
                 subTitle=""
             
                 extra={[

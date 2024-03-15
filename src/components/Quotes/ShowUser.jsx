@@ -1,20 +1,84 @@
 import React from 'react';
+import { useEffect, useState } from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Result } from 'antd';
-
+import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../firebase/api";
 
 
   export function ShowUser({DataUser}) {
     const { TextArea } = Input;
 
-    const {nombre, cedula}=DataUser
+    const {nombre, cedula, telefonocelular}=DataUser
+
+    const initialState = {
+      order: "",
+      cedula: cedula,
+      nombre: nombre,
+      telefono: telefonocelular,
+      type: "registered",
+      firma: "",
+    };
+
+    const [customerAttention, setCustomerAttention] = useState(initialState);   
+    const [clientes, setClientes] = useState([]);
+    let RegistroId;
+   
+
+    const getClientes = async () => {
+      const querySnapshot = await getWebsites();   
+      const docs = [];
+      querySnapshot.forEach((doc) => {
+        docs.push({ ...doc.data(), id: doc.id });
+      });
+       console.log(docs)
+      setClientes(docs) 
+    };
+  
+    useEffect(() => {   
+      getClientes();
+    
+    }, []);
 
   
-    const onFinish = (values) => {
-        console.log('Received values of form:', values);
-        // Add your navigation logic or API calls here if needed
-        window.location.href = `/docs/pdf-viewer-with-signature`;
-      };
+    const onFinish = async (values) => {
+      try {
+              getClientes();
+
+              const orders = clientes.map(objeto => objeto.order);
+              const maximo = orders.reduce((max, order) => Math.max(max, order), orders[0]);
+              
+              const UpdatedObject = {
+                ...customerAttention, 
+                order: maximo ? maximo + 1 : 1
+              };  
+              
+              const Buscar = clientes.find(type => type.cedula == UpdatedObject.cedula )            
+
+              if (!Buscar) {
+                await saveWebsite(UpdatedObject)
+                .then((docId) => {
+                  RegistroId = docId._key.path.segments[1];
+                  console.log('ID del documento guardado:', RegistroId);               
+                })
+                window.location.href = `/docs/pdf-viewer-with-signature?RegistroId=${encodeURIComponent(RegistroId)}`;
+
+              } else {
+                await saveWebsite(UpdatedObject)
+                .then((docId) => {
+                  RegistroId = docId._key.path.segments[1];
+                  console.log('ID del documento guardado:', RegistroId);               
+                })
+                window.location.href = `/docs/pdf-viewer-with-signature?RegistroId=${encodeURIComponent(RegistroId)}`;
+              
+               
+              }
+     
+       
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
   
     const onFinishFailed = (errorInfo) => {
       console.log('Failed:', errorInfo);
@@ -41,7 +105,7 @@ import { Button, Checkbox, Form, Input, Result } from 'antd';
                 extra={[
                     <div key='ShowUser'>
                     <header className="mb-1 space-y-1">
-                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white">Banesco Seguro</h5>      
+                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white">Seguro: xxxxxx</h5>      
                     </header>                
                 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>

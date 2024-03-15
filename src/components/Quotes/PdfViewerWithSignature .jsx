@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, Pagination, Card } from 'antd';
 import { Document, Page, pdfjs } from 'react-pdf';
 import SignatureCanvas from 'react-signature-canvas';
+import { toast } from "react-toastify";
+import { getWebsite, updateWebsite } from "../../firebase/api";
 import axios from 'axios';
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -15,6 +17,28 @@ const PdfViewerWithSignature = () => {
   const [pdfUrl, setPdfUrl] = useState('');
 
   const sigCanvas = React.createRef();
+
+  const [clientes, setClientes] = useState([]); 
+  const [clientesId, setClientesId] = useState();   
+
+  const getLinkById = async (id) => {
+    try {
+      const doc = await getWebsite(id);              
+
+      setClientes({ ...doc.data() });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const registroId = queryParams.get('RegistroId');
+    
+    getLinkById(registroId)
+    setClientesId(registroId)    
+   
+  }, []);
 
   useEffect(() => {
     const fetchPdf = async () => {
@@ -33,6 +57,7 @@ const PdfViewerWithSignature = () => {
 
     fetchPdf();
   }, []);
+  
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
@@ -48,12 +73,22 @@ const PdfViewerWithSignature = () => {
     setIsSignatureModalVisible(false);
   };
 
-  const handleSaveSignature = () => {
+  const handleSaveSignature = async () => {
     const signatureImage = sigCanvas.current.toDataURL();
 
-    window.location.href = `/docs/shift-number?turno=${encodeURIComponent('12')}`;
-    console.log(signatureImage)
-    // Agregar lógica para manejar la imagen de la firma (guardar en el servidor, etc.)
+    const UpdatedObject = {
+      ...clientes, 
+      firma: signatureImage
+    }; 
+          if (UpdatedObject) {
+          await updateWebsite(clientesId, UpdatedObject);
+          toast("Updated", {
+            type: "success",
+          });
+          window.location.href = `/docs/shift-number?nombre=${encodeURIComponent(UpdatedObject.nombre)}&turno=${encodeURIComponent(UpdatedObject.order)}`;
+        }
+  
+    
     handleHideSignatureModal();
   };
 
