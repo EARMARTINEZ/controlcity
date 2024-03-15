@@ -105,7 +105,7 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
                 extra={[
                     <div key='ShowUser'>
                     <header className="mb-1 space-y-1">
-                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white">Seguro: xxxxxx</h5>      
+                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white"></h5>      
                     </header>                
                 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
