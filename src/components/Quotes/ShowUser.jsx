@@ -8,13 +8,13 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
   export function ShowUser({DataUser}) {
     const { TextArea } = Input;
 
-    const {nombre, cedula, telefonocelular, asegurado}=DataUser
+    const {Nombre, Cedula, telefonocelular, aseguradora}=DataUser
     const currentDate = new Date();
 
     const initialState = {
       order: "",
-      cedula: cedula,
-      nombre: nombre,
+      cedula: Cedula,
+      nombre: Nombre,
       telefono: telefonocelular,
       type: "registered",
       firma: "",
@@ -101,13 +101,13 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
             <Form.Item >  
                 <Result
                 status="success"
-                title={cedula}
-                subTitle={nombre}
+                title={Cedula}
+                subTitle={Nombre}
             
                 extra={[
                     <div key='ShowUser'>
                     <header className="mb-1 space-y-1">
-                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white">{asegurado} </h5>      
+                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white">{aseguradora} </h5>      
                     </header>                
                 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
