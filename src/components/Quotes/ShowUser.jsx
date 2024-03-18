@@ -8,7 +8,7 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
   export function ShowUser({DataUser}) {
     const { TextArea } = Input;
 
-    const {nombre, cedula, telefonocelular}=DataUser
+    const {nombre, cedula, telefonocelular, asegurado}=DataUser
     const currentDate = new Date();
 
     const initialState = {
@@ -32,7 +32,7 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
       querySnapshot.forEach((doc) => {
         docs.push({ ...doc.data(), id: doc.id });
       });
-       console.log(docs)
+      //  console.log(docs)
       setClientes(docs) 
     };
   
@@ -107,7 +107,7 @@ import { saveWebsite, getWebsites, getWebsite, updateWebsite } from "../../fireb
                 extra={[
                     <div key='ShowUser'>
                     <header className="mb-1 space-y-1">
-                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white"></h5>      
+                    <h5 className="font-display text-2xl tracking-tight text-slate-900 dark:text-white">{asegurado} </h5>      
                     </header>                
                 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>

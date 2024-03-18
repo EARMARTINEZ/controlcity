@@ -15,7 +15,7 @@ const UserProvider = ({ children }) => {
       
         const cedula = values ? values : ''      
         
-        const pageData = await fetchAPI("/user-info?id_card="+cedula, {            
+        const pageData = await fetchAPI("/user-info-seguro?id_card="+cedula, {            
           }).then( MapData => {                 
               
          
